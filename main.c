@@ -9,13 +9,18 @@
 
 int main()
 {
-    char** tab=allouer_tab_2D(19,61);
-    desallouer_tab_2D(tab,19);
-    afficher_tab_2D(tab,19,61);
-    taille_fichier("plateau.txt",19,61);
-    char read=lire_fichier("plateau.txt");
+    int nbLig=0,nbCol=0;
+    taille_fichier("plateau.txt",&nbLig,&nbCol);
+    char** tab=lire_fichier("plateau.txt");
+    //tab=modifier_caractere(tab,nbLig,nbCol,'2','1');
+    //printf("tableau après modification:\n");
+    //afficher_tab_2D(tab,nbLig,nbCol);
+    //ecrire_fichier("plateau.txt",tab,nbLig,nbCol);
+    //printf("tableau après écriture:\n");
     SDL_Window* fenetre;
     SDL_Renderer* rendu;
+    int width,height,acc;
+    Uint32 format;
     SDL_Event event;
     bool terminer=false;
     //initialisation de la SDL
@@ -35,31 +40,72 @@ int main()
     rendu=SDL_CreateRenderer(fenetre,-1,SDL_RENDERER_ACCELERATED);
     //Charger image
     SDL_Texture* fond=charger_image("ciel.bmp",rendu);
+    SDL_Texture* sprite=charger_image("pavage.bmp",rendu);
+    SDL_Texture* joueur=charger_image("joueur.bmp",rendu);
+    SDL_QueryTexture(sprite,&format,&acc,&width,&height);
+    width=width/16;
+    height=height/10;
+    SDL_Rect DestR[160];
+    SDL_Rect Src;
     //boucle de jeu
     while(!terminer){
         SDL_RenderClear(rendu);
-        SDL_RenderCopy(rendu,fond,NULL,NULL);
+        //SDL_RenderCopy(rendu,fond,NULL,NULL);
 
         SDL_PollEvent(&event);
         switch(event.type){
             case SDL_QUIT:
                 terminer=true;
                 break;
-            case SDL_KEYDOWN:
+            case SDL_KEYDOWN: //appuyer sur une touhe
                 switch(event.key.keysym.sym){
-                    case SDLK_ESCAPE:
-                    case SDLK_q:
+                    case SDLK_ESCAPE: //appuyer sur Echap
+                    case SDLK_q: 
                         terminer=true;
                         break;
+                            
                 }
                 break;
         }
+        for(int i=0;i<nbLig;i++){
+            for(int j=0;j<nbCol;j++){
+                if (tab[i][j]=='1')
+                {
+                    DestR[i].x=1*width;
+                    DestR[i].y=4*height;
+                    DestR[i].w=width;
+                    DestR[i].h=height;
+                    Src.x=width*j;
+                    Src.y=height*i;
+                    Src.w=width;
+                    Src.h=height;
+                    SDL_RenderCopy(rendu,sprite,&DestR[i],&Src);
+                }
+                else if(tab[i][j]=='0'){
+                    DestR[i].x=11*width;
+                    DestR[i].y=6*height;
+                    DestR[i].w=width;
+                    DestR[i].h=height;
+                    Src.x=width*j;
+                    Src.y=height*i;
+                    Src.w=width;
+                    Src.h=height;
+                    SDL_RenderCopy(rendu,sprite,&DestR[i],&Src);
+
+                }
+            }
+        }
+
+
         SDL_RenderPresent(rendu);
+        SDL_UpdateWindowSurface(fenetre);
     }
     //Quitter SDL
     SDL_DestroyWindow(fenetre);
     SDL_DestroyTexture(fond);
+    SDL_DestroyTexture(sprite);
     SDL_DestroyRenderer(rendu);
     SDL_Quit();
+    desallouer_tab_2D(tab,nbLig);
     return 0;
 }
