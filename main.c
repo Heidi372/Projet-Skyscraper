@@ -12,7 +12,9 @@ int main()
     int nbLig=0,nbCol=0;
     taille_fichier("plateau.txt",&nbLig,&nbCol);
     char** tab=lire_fichier("plateau.txt");
-    //tab=modifier_caractere(tab,nbLig,nbCol,'2','1');
+    //printf("Nb ligne:%d",nbLig );
+    //printf("Nb ligne:%d",nbCol );
+    //tab=modifier_caractere(tab,nbLig,nbCol,'1','2');
     //printf("tableau après modification:\n");
     //afficher_tab_2D(tab,nbLig,nbCol);
     //ecrire_fichier("plateau.txt",tab,nbLig,nbCol);
